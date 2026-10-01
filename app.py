@@ -37,7 +37,7 @@ def burn_key(key_to_burn):
 # --- YOUR LIVE ENDPOINTS ---
 SHEET_ID = "1un359_bf30-82K3C74hH7sX-uSH-jpx1yB12N7cB3v0"
 APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-pKMSgW-i32k9XAYEPaybbE5V4MV9Pm2boob3PFW10JwqahSPZjlFD1nIoS31KtLt/exec"
-MAIN_WEBSITE_URL = "https://bhumikasihare.github.io/genometech-studio/"
+MAIN_WEBSITE_URL = "https://genometechstudio.github.io"
 
 # --- TIER 1, 2, 4, 5 CONFIGURATION (EXACT MODULES, PRICES & YOUR RAZORPAY LINKS) ---
 TIER_CATALOG = {
@@ -187,6 +187,14 @@ st.markdown(
     '  background: linear-gradient(90deg, #facc15, #fde047) !important;'
     '  color: #040b18 !important;'
     '}'
+    '.gts-brand {'
+    '  text-decoration: none;'
+    '  transition: opacity 0.2s ease;'
+    '  cursor: pointer;'
+    '}'
+    '.gts-brand:hover {'
+    '  opacity: 0.85;'
+    '}'
     '</style>'
     '<div class="bg-tier-sticker bts-1">🛡️</div>'
     '<div class="bg-tier-sticker bts-2">🧬</div>'
@@ -273,13 +281,13 @@ with st.sidebar:
 head_col1, head_col2 = st.columns([3.6, 1.4])
 with head_col1:
     st.markdown(
-        '<div style="display:flex; align-items:center; gap:14px;">'
-        '<div style="width:54px; height:54px; border-radius:14px; background:rgba(250,204,21,0.16); border:1px solid #facc15; display:flex; align-items:center; justify-content:center; font-size:1.9rem;">🧬</div>'
-        '<div>'
-        '<div style="font-size:0.78rem; text-transform:uppercase; letter-spacing:0.15em; color:#facc15; font-weight:800;">GenomeTech Studio • Bioinformatics Portal</div>'
-        '<div style="font-size:2.1rem; font-weight:900; color:#ffffff; letter-spacing:-0.02em;">Geno<span style="color:#facc15;">Stack</span> Services</div>'
-        '</div>'
-        '</div>',
+        f'<div style="display:flex; align-items:center; gap:14px;">'
+        f'<div style="width:54px; height:54px; border-radius:14px; background:rgba(250,204,21,0.16); border:1px solid #facc15; display:flex; align-items:center; justify-content:center; font-size:1.9rem;">🧬</div>'
+        f'<div>'
+        f'<div style="font-size:0.78rem; text-transform:uppercase; letter-spacing:0.15em; color:#facc15; font-weight:800;">GenomeTech Studio • Bioinformatics Portal</div>'
+        f'<a href="{MAIN_WEBSITE_URL}" class="gts-brand" style="font-size:2.1rem; font-weight:900; color:#ffffff; letter-spacing:-0.02em;">Geno<span style="color:#facc15;">Stack</span> Services</a>'
+        f'</div>'
+        f'</div>',
         unsafe_allow_html=True
     )
 with head_col2:
@@ -487,7 +495,7 @@ with right_col:
             if not client_email.strip() or "@" not in client_email:
                 st.warning("⚠️ Please enter a valid Email Address on the left first.")
             elif len(picked_modules) == 0:
-                st.warning("⚠️ Please select at least 1 of the 4 services above.")
+                st.warning("⚠️️ Please select at least 1 of the 4 services above.")
             else:
                 ok, ts_saved = save_checkout_to_sheet(
                     email_val=client_email,

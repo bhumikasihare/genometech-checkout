@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import json
+import os
+import time
 from datetime import datetime
 
 # --- PAGE CONFIGURATION ---
@@ -10,6 +12,27 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# --- SECURITY: MASTER KEY & ANTI-REUSE GATEWAY ---
+if "checkout_unlocked" not in st.session_state:
+    st.session_state["checkout_unlocked"] = False
+
+DB_FILE = "used_keys.json"
+
+def is_key_burned(key_to_check):
+    if not os.path.exists(DB_FILE):
+        with open(DB_FILE, 'w') as f:
+            json.dump({"used_keys": {}}, f)
+    with open(DB_FILE, 'r') as f:
+        data = json.load(f)
+    return key_to_check in data["used_keys"], data.get("used_keys", {}).get(key_to_check, "")
+    
+def burn_key(key_to_burn):
+    with open(DB_FILE, 'r') as f:
+        data = json.load(f)
+    data["used_keys"][key_to_burn] = time.strftime("%Y-%m-%d %H:%M:%S")
+    with open(DB_FILE, 'w') as f:
+        json.dump(data, f)
 
 # --- YOUR LIVE ENDPOINTS ---
 SHEET_ID = "1un359_bf30-82K3C74hH7sX-uSH-jpx1yB12N7cB3v0"
@@ -225,6 +248,26 @@ with st.sidebar:
     )
     st.markdown("### 🧬 GenoStack Services")
     st.caption("Select your desired bioinformatics tier and package option to begin your project.")
+    
+    st.markdown("---")
+    st.markdown("### 🔑 Master Access")
+    master_key = st.text_input("Enter Key:", type="password", key="master_key_input")
+    if st.button("Unlock Portal"):
+        if master_key == "GTS-MASTER-UNLIMITED":
+            st.session_state["checkout_unlocked"] = True
+            st.success("Master Key Accepted.")
+            st.rerun()
+        elif master_key.startswith("GTS-DEMO-"):
+            burned, burn_date = is_key_burned(master_key)
+            if burned:
+                st.error(f"❌ Security Lock: This Demo Key was already claimed on {burn_date}.")
+            else:
+                burn_key(master_key)
+                st.session_state["checkout_unlocked"] = True
+                st.success("Demo Key Accepted.")
+                st.rerun()
+        else:
+            st.error("Invalid Key.")
 
 # --- TOP HEADER: GENOSTACK SERVICES + BACK TO WEBSITE ON SIDE ---
 head_col1, head_col2 = st.columns([3.6, 1.4])
@@ -248,6 +291,9 @@ with head_col2:
     )
 
 st.markdown("<hr style='border-color: rgba(250, 204, 21, 0.28); margin: 0.85rem 0 1.3rem 0;'>", unsafe_allow_html=True)
+
+if st.session_state["checkout_unlocked"]:
+    st.info("🔓 You are currently logged in with bypass access. Orders will not require payment links.")
 
 # --- TIER SELECTOR BAR (TIERS 1, 2, 4, 5) ---
 st.markdown("##### 🎯 Choose Your GenoStack Pipeline Tier")
